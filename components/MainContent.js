@@ -75,11 +75,11 @@ const MainContent = () => {
         console.log(e)
         setList([
             {
-              title: '测试', count: 0, session: 0
+              title: '测试0', count: 0, session: 0
             }, {
-              title: '测试', count: 5, session: 1
+              title: '测试1', count: 5, session: 1
             }, {
-              title: '测试', count: 1, session: 2
+              title: '测试2', count: 1, session: 2
           }
           ]
         )
@@ -143,12 +143,9 @@ const MainContent = () => {
               >
                 <Radio.Group value={1}>
                   {list.map(item => (
-                    list.length === 3 ?
-                      <Radio key={item.session} className="radio_style" value={item.session}>
-                        测试{item.session}（剩余{item.count}）
-                      </Radio> : <Radio key={item.session} className="radio_style" value={item.session}>
-                        测试{item.session}（剩余{item.count}）
-                      </Radio>
+                    <Radio key={item.session} className="radio_style" value={item.session}>
+                      {item.title}（剩余{item.count}）
+                    </Radio>
                   ))}
                 </Radio.Group>
               </Form.Item>
