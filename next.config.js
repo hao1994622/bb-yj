@@ -4,4 +4,11 @@ if(typeof require !== 'undefined'){
   require.extensions['.css']=file=>{}
 }
 
-module.exports = withCss({})
+module.exports = {
+  exportPathMap: function () {
+    return {
+      '/': { page: '/' }
+    }
+  },
+  ...withCss({})
+}
