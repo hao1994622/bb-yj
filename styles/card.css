@@ -1,0 +1,14 @@
+.card_contain{
+    box-shadow: 1px 1px 6px #999;
+    padding: 20px;
+}
+
+.card_stat{
+    margin: 0 8px;
+}
+
+.radio_style{
+    display: block;
+    height: 30px;
+    line-height: 30px;
+}

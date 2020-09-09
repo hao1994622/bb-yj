@@ -1,0 +1,40 @@
+@import '~antd/dist/antd.css';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: #f6f6f6;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.ant-layout-footer,
+.ant-layout-header,
+.ant-layout-sider-children{
+  background-color: #fff;
+}
+
+.height100{
+  height: 100%;
+}
+
+.fontSize12{
+  font-size: 12px;
+}
+
+.sider_style{
+  position: fixed;
+  z-index: 9;
+  height: 100%;
+  padding-top: 64px;
+}
