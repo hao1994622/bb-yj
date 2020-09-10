@@ -3,8 +3,7 @@ import { Radio, Typography, Form, Input, Button, Result, Select } from 'antd';
 import {Flex} from 'rebass'
 import "../styles/card.css"
 import { UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
-import axios from 'axios'
-
+import { get, post } from 'axios'
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -74,23 +73,55 @@ const MainContent = () => {
   };
 
   useEffect(() => {
+
     (async () => {
       try {
-        const res = await axios.post('/shuliang/');
+        const wxConfig = await get('/weixin_config/');
+        // const shareInfo = await get('/share_info/');
+        console.log(wxConfig.data)
+        // console.log(shareInfo.data)
+        wx.config({
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，
+          jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline'], // 必填，需要使用的JS接口列表
+          ...wxConfig.data
+        });
+        wx.ready(function(){
+          wx.onMenuShareAppMessage({
+            // ...shareInfo.data,
+            desc: "博饼预约盛大启动",
+            imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
+            link: "http://www.0lianchao.com/runoob/",
+            title: "建发磐龙府中秋博饼预约",
+            success: function () {
+              alert("分享微信好友成功！");
+            },
+            cancel: function () {
+              alert('分享微信好友失败');
+            }
+          });
+          wx.onMenuShareTimeline({
+            // ...shareInfo.data,
+            desc: "博饼预约盛大启动",
+            imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
+            link: "http://www.0lianchao.com/runoob/",
+            title: "建发磐龙府中秋博饼预约",
+            success: function () {
+              alert("分享微信好友成功！");
+            },
+            cancel: function () {
+              alert('分享朋友圈失败');
+            }
+          });
+        });
+      }catch (e) {
+        console.log(e)
+      }
+      try {
+        const res = await post('/shuliang/');
         console.log(res)
         setList(res.data)
       }catch (e) {
         console.log(e)
-        // setList([
-        //     {
-        //       title: '测试0', count: 0, session: 0
-        //     }, {
-        //       title: '测试1', count: 5, session: 1
-        //     }, {
-        //       title: '测试2', count: 1, session: 2
-        //   }
-        //   ]
-        // )
       }
     })()
   }, [])

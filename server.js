@@ -12,6 +12,14 @@ const devProxy = {
     target: 'http://www.0lianchao.com',
     changeOrigin: true
   },
+  '/weixin_config': {
+    target: 'http://www.0lianchao.com',
+    changeOrigin: true
+  },
+  '/share_info': {
+    target: 'http://www.0lianchao.com',
+    changeOrigin: true
+  }
 }
 
 const port = parseInt(process.env.PORT, 10) || 3000
