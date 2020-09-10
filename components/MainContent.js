@@ -1,25 +1,28 @@
 import React, {useEffect, useState} from 'react';
-import { Radio, Typography, Form, Input, Button, Result } from 'antd';
+import { Radio, Typography, Form, Input, Button, Result, Select } from 'antd';
 import {Flex} from 'rebass'
 import "../styles/card.css"
-import { UserOutlined, PhoneOutlined } from '@ant-design/icons';
+import { UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
 import axios from 'axios'
 
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
-const listInit = [
-  '央著16日',
-  '央著17日',
-  '央誉18日',
-  '央誉19日',
-  '玉湖壹号20日',
-  '磐龙府21日',
-  '磐龙府22日'
-]
+// const listInit = [
+//   '央著16日',
+//   '央著17日',
+//   '央誉18日',
+//   '央誉19日',
+//   '玉湖壹号20日',
+//   '磐龙府21日',
+//   '磐龙府22日'
+// ]
 
 const MainContent = () => {
   const [list, setList] = useState([]);
+  const [date, setDate] = useState();
+  const [currentRoom, setCurrentRoom] = useState('yangzhu');
   const [showRes, setShowRes] = useState(false);
   const [resStatus, setResStatus] = useState({
     type: 'warning',
@@ -28,10 +31,10 @@ const MainContent = () => {
 
   const onFinish = async values => {
     console.log('Success:', values);
-    const {name, phone, session} = values;
+    const {name, phone, room, xiaoqu, session} = values;
     try {
       const res = await axios.post('/baoming/',{
-        name, phone, session
+        name, phone, room, xiaoqu, session
       });
       console.log(res);
       if(res.data === 0) {
@@ -43,6 +46,16 @@ const MainContent = () => {
         setResStatus({
           type: 'info',
           msg: '该场次已满'
+        })
+      } else if(res.data === 2) {
+        setResStatus({
+          type: 'info',
+          msg: '房间号与人名不符合'
+        })
+      } else if(res.data === 3) {
+        setResStatus({
+          type: 'info',
+          msg: '已经预约过了'
         })
       } else {
         setResStatus({
@@ -66,23 +79,19 @@ const MainContent = () => {
       try {
         const res = await axios.post('/shuliang/');
         console.log(res)
-        setList(res.data.map(i => {
-          const newI = i;
-          newI.title = listInit[i.session];
-          return newI;
-        }))
+        setList(res.data)
       }catch (e) {
         console.log(e)
-        setList([
-            {
-              title: '测试0', count: 0, session: 0
-            }, {
-              title: '测试1', count: 5, session: 1
-            }, {
-              title: '测试2', count: 1, session: 2
-          }
-          ]
-        )
+        // setList([
+        //     {
+        //       title: '测试0', count: 0, session: 0
+        //     }, {
+        //       title: '测试1', count: 5, session: 1
+        //     }, {
+        //       title: '测试2', count: 1, session: 2
+        //   }
+        //   ]
+        // )
       }
     })()
   }, [])
@@ -133,22 +142,116 @@ const MainContent = () => {
               >
                 <Input prefix={<PhoneOutlined />} />
               </Form.Item>
-
+              <Form.Item
+                labelCol={{span: 24}}
+                label={<Text strong>房号</Text>}
+                name="room"
+                rules={[
+                  { required: true, message: '必填项' },
+                  {
+                    pattern: /^[0-9]+#[0-9]+$/,
+                    message: '房号格式不正确',
+                  }
+                  ]}
+              >
+                <Input placeholder="1#203" prefix={<HomeOutlined />} />
+              </Form.Item>
               <br/>
+
+
+
+
+
               <Form.Item
                 labelCol={{span: 24}}
                 label={<Text strong>博饼日期</Text>}
-                name="session"
-                rules={[{ required: true, message: '必填项' }]}
               >
-                <Radio.Group value={1}>
-                  {list.map(item => (
-                    <Radio key={item.session} className="radio_style" value={item.session}>
-                      {item.title}（剩余{item.count}）
-                    </Radio>
-                  ))}
-                </Radio.Group>
+                {/*<Radio.Group value={1}>*/}
+                {/*  {list.map(item => (*/}
+                {/*    <Radio key={item.session} className="radio_style" value={item.session}>*/}
+                {/*      {item.title}（剩余{item.count}）*/}
+                {/*    </Radio>*/}
+                {/*  ))}*/}
+                {/*</Radio.Group>*/}
+
+                <Form.Item
+                  labelCol={{span: 24}}
+                  name="xiaoqu"
+                  rules={[{ required: true, message: '必填项' }]}
+                >
+                  <Select placeholder="选择小区" onChange={val => setCurrentRoom(val)}>
+                    <Option value="0">央著</Option>
+                    <Option value="1">央誉</Option>
+                    <Option value="2">玉湖壹号</Option>
+                    <Option value="3">磐龙府</Option>
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  labelCol={{span: 24}}
+                  name="session"
+                  rules={[{ required: true, message: '必填项' }]}
+                >
+                  {list.length > 0 ? (
+                    <Radio.Group onChange={val => setDate(val)}>
+                      {currentRoom === '0' && (<>
+                        <Radio value={0}>16日（余{list[0].count}）</Radio>
+                        <Radio name="session" value={1}>17日（余{list[1].count}）</Radio>
+                      </>)}
+                      {currentRoom === '1' && (<>
+                        <Radio value={2}>18日（余{list[2].count}）</Radio>
+                        <Radio value={3}>19日（余{list[3].count}）</Radio>
+                      </>)}
+                      {currentRoom === '2' && (<>
+                        <Radio value={4}>20日（余{list[4].count}）</Radio>
+                      </>)}
+                      {currentRoom === '3' && (<>
+                        <Radio value={5}>21日（余{list[5].count}）</Radio>
+                        <Radio value={6}>22日（余{list[6].count}）</Radio>
+                      </>)}
+                    </Radio.Group>
+                  ) : <Text type='danger'>服务器开小差，请刷新重试</Text>}
+                </Form.Item>
+
+
+                {/*{list.length > 0 && (*/}
+                {/*  <>*/}
+                {/*    <Input.Group compact>*/}
+                {/*      <Form.Item noStyle>*/}
+                {/*        <Select placeholder="选择小区" defaultValue='yangzhu' onChange={val => setCurrentRoom(val)}>*/}
+                {/*          <Option value="yangzhu">央著</Option>*/}
+                {/*          <Option value="yangyu">央誉</Option>*/}
+                {/*          <Option value="yuhu">玉湖壹号</Option>*/}
+                {/*          <Option value="panlong">磐龙府</Option>*/}
+                {/*        </Select>*/}
+                {/*      </Form.Item>*/}
+                {/*      <br/>*/}
+                {/*      <br/>*/}
+                {/*      <Radio.Group onChange={val => setDate(val)}>*/}
+                {/*        {currentRoom === 'yangzhu' && (<>*/}
+                {/*          <Radio value={0}>16日（余{list[0].count}）</Radio>*/}
+                {/*          <Radio name="session" value={1}>17日（余{list[1].count}）</Radio>*/}
+                {/*        </>)}*/}
+                {/*        {currentRoom === 'yangyu' && (<>*/}
+                {/*          <Radio value={2}>18日（余{list[2].count}）</Radio>*/}
+                {/*          <Radio value={3}>19日（余{list[3].count}）</Radio>*/}
+                {/*        </>)}*/}
+                {/*        {currentRoom === 'yuhu' && (<>*/}
+                {/*          <Radio value={4}>20日（余{list[4].count}）</Radio>*/}
+                {/*        </>)}*/}
+                {/*        {currentRoom === 'panlong' && (<>*/}
+                {/*          <Radio value={5}>21日（余{list[5].count}）</Radio>*/}
+                {/*          <Radio value={6}>22日（余{list[6].count}）</Radio>*/}
+                {/*        </>)}*/}
+                {/*      </Radio.Group>*/}
+                {/*    </Input.Group>*/}
+                {/*    {!date && <Text type="danger">请选择日期</Text>}*/}
+                {/*  </>*/}
+                {/*)}*/}
+
               </Form.Item>
+
+
               <Form.Item>
                 <Flex justifyContent="center">
                   <Button type="primary" htmlType="submit">
