@@ -21,7 +21,6 @@ const { Option } = Select;
 
 const MainContent = () => {
   const [list, setList] = useState([]);
-  const [date, setDate] = useState();
   const [currentRoom, setCurrentRoom] = useState('yangzhu');
   const [showRes, setShowRes] = useState(false);
   const [resStatus, setResStatus] = useState({
@@ -193,7 +192,7 @@ const MainContent = () => {
                   rules={[{ required: true, message: '必填项' }]}
                 >
                   {list.length > 0 ? (
-                    <Radio.Group onChange={val => setDate(val)}>
+                    <Radio.Group>
                       {currentRoom === '0' && (<>
                         <Radio value={0}>16日（余{list[0].count}）</Radio>
                         <Radio name="session" value={1}>17日（余{list[1].count}）</Radio>
