@@ -1,10 +1,6 @@
-.card_contain{
+.contain{
     box-shadow: 1px 1px 6px #999;
     padding: 20px;
-}
-
-.card_stat{
-    margin: 0 8px;
 }
 
 .radio_style{

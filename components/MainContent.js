@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import { Radio, Typography, Form, Input, Button, Result, Select } from 'antd';
 import {Flex} from 'rebass'
-import "../styles/card.css"
+import styles from "../styles/card.module.css"
 import { UserOutlined, PhoneOutlined, HomeOutlined } from '@ant-design/icons';
-import { get, post } from 'axios'
+import { post } from 'axios'
 
 const { Title, Text } = Typography;
 const { Option } = Select;
-
 // const listInit = [
 //   '央著16日',
 //   '央著17日',
@@ -20,8 +19,10 @@ const { Option } = Select;
 
 const MainContent = () => {
   const [list, setList] = useState([]);
+  const [session, setSession] = useState();
   const [currentRoom, setCurrentRoom] = useState('yangzhu');
   const [showRes, setShowRes] = useState(false);
+  const [dateErr, setDateErr] = useState(false);
   const [resStatus, setResStatus] = useState({
     type: 'warning',
     msg: '服务器开小差~'
@@ -29,9 +30,14 @@ const MainContent = () => {
 
   const onFinish = async values => {
     console.log('Success:', values);
-    const {name, phone, room, xiaoqu, session} = values;
+    console.log(session)
+    if(!session) {
+      setDateErr(true);
+      return;
+    }
+    const {name, phone, room, xiaoqu} = values;
     try {
-      const res = await axios.post('/baoming/',{
+      const res = await post('/baoming/',{
         name, phone, room, xiaoqu, session
       });
       console.log(res);
@@ -75,47 +81,47 @@ const MainContent = () => {
   useEffect(() => {
 
     (async () => {
-      try {
-        const wxConfig = await get('/weixin_config/');
-        // const shareInfo = await get('/share_info/');
-        console.log(wxConfig.data)
-        // console.log(shareInfo.data)
-        wx.config({
-          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，
-          jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline'], // 必填，需要使用的JS接口列表
-          ...wxConfig.data
-        });
-        wx.ready(function(){
-          wx.onMenuShareAppMessage({
-            // ...shareInfo.data,
-            desc: "博饼预约盛大启动",
-            imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
-            link: "http://www.0lianchao.com/runoob/",
-            title: "建发磐龙府中秋博饼预约",
-            success: function () {
-              alert("分享微信好友成功！");
-            },
-            cancel: function () {
-              alert('分享微信好友失败');
-            }
-          });
-          wx.onMenuShareTimeline({
-            // ...shareInfo.data,
-            desc: "博饼预约盛大启动",
-            imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
-            link: "http://www.0lianchao.com/runoob/",
-            title: "建发磐龙府中秋博饼预约",
-            success: function () {
-              alert("分享微信好友成功！");
-            },
-            cancel: function () {
-              alert('分享朋友圈失败');
-            }
-          });
-        });
-      }catch (e) {
-        console.log(e)
-      }
+      // try {
+      //   const wxConfig = await get('/weixin_config/');
+      //   // const shareInfo = await get('/share_info/');
+      //   console.log(wxConfig.data)
+      //   // console.log(shareInfo.data)
+      //   wx.config({
+      //     debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，
+      //     jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline'], // 必填，需要使用的JS接口列表
+      //     ...wxConfig.data
+      //   });
+      //   wx.ready(function(){
+      //     wx.onMenuShareAppMessage({
+      //       // ...shareInfo.data,
+      //       desc: "博饼预约盛大启动",
+      //       imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
+      //       link: "http://www.0lianchao.com/runoob/",
+      //       title: "建发磐龙府中秋博饼预约",
+      //       success: function () {
+      //         alert("分享微信好友成功！");
+      //       },
+      //       cancel: function () {
+      //         alert('分享微信好友失败');
+      //       }
+      //     });
+      //     wx.onMenuShareTimeline({
+      //       // ...shareInfo.data,
+      //       desc: "博饼预约盛大启动",
+      //       imgUrl: "http://www.0lianchao.com/static/pic/timg1.jpg",
+      //       link: "http://www.0lianchao.com/runoob/",
+      //       title: "建发磐龙府中秋博饼预约",
+      //       success: function () {
+      //         alert("分享微信好友成功！");
+      //       },
+      //       cancel: function () {
+      //         alert('分享朋友圈失败');
+      //       }
+      //     });
+      //   });
+      // }catch (e) {
+      //   console.log(e)
+      // }
       try {
         const res = await post('/shuliang/');
         console.log(res)
@@ -139,7 +145,7 @@ const MainContent = () => {
           }
         />
       )}
-      <Flex style={{display: showRes && 'none'}} bg='#fff' className='card_contain' sx={{minHeight: ['100vh', '100vh', 'auto']}}>
+      <Flex style={{display: showRes && 'none'}} bg='#fff' className={styles.contain} sx={{minHeight: ['100vh', '100vh', 'auto']}}>
         <Flex width={1} className='height100' flexDirection="column">
           <div style={{marginBottom: 50}}>
             <Title level={4}>建发磐龙府中秋博饼预约</Title>
@@ -191,7 +197,7 @@ const MainContent = () => {
 
             <Form.Item
               labelCol={{span: 24}}
-              label={<Text strong>博饼日期</Text>}
+              label={<Text strong><span style={{color: 'red'}}>*&nbsp;</span>博饼日期 {dateErr && <Text type='danger'>请选择小区和日期</Text>}</Text>}
             >
               {/*<Radio.Group value={1}>*/}
               {/*  {list.map(item => (*/}
@@ -206,35 +212,41 @@ const MainContent = () => {
                 name="xiaoqu"
                 rules={[{ required: true, message: '必填项' }]}
               >
-                <Select placeholder="选择小区" onChange={val => setCurrentRoom(val)}>
-                  <Option value="0">央著</Option>
-                  <Option value="1">央誉</Option>
-                  <Option value="2">玉湖壹号</Option>
-                  <Option value="3">磐龙府</Option>
+                <Select placeholder="选择小区" onChange={val => {
+                  setCurrentRoom(val);
+                  setSession('');
+                }}>
+                  <Option value="0">磐龙府</Option>
+                  <Option value="1">玉湖壹号</Option>
+                  <Option value="2">央誉</Option>
+                  <Option value="3">央著</Option>
                 </Select>
               </Form.Item>
 
               <Form.Item
                 labelCol={{span: 24}}
-                name="session"
-                rules={[{ required: true, message: '必填项' }]}
+                // name="noUse"
+                // rules={[{ required: true, message: '必填项' }]}
               >
                 {list.length > 0 ? (
-                  <Radio.Group>
+                  <Radio.Group onChange={e => {
+                    setSession(e.target.value);
+                    setDateErr(false);
+                  }} value={session}>
                     {currentRoom === '0' && (<>
-                      <Radio value={0}>16日（余{list[0].count}）</Radio>
-                      <Radio name="session" value={1}>17日（余{list[1].count}）</Radio>
+                      <Radio value={0}>19日（余{list[0].count}）</Radio>
+                      <Radio value={1}>20日（余{list[1].count}）</Radio>
                     </>)}
                     {currentRoom === '1' && (<>
-                      <Radio value={2}>18日（余{list[2].count}）</Radio>
-                      <Radio value={3}>19日（余{list[3].count}）</Radio>
+                      <Radio value={2}>21日（余{list[2].count}）</Radio>
                     </>)}
                     {currentRoom === '2' && (<>
-                      <Radio value={4}>20日（余{list[4].count}）</Radio>
+                      <Radio value={3}>22日（余{list[4].count}）</Radio>
+                      <Radio value={4}>23日（余{list[4].count}）</Radio>
                     </>)}
                     {currentRoom === '3' && (<>
-                      <Radio value={5}>21日（余{list[5].count}）</Radio>
-                      <Radio value={6}>22日（余{list[6].count}）</Radio>
+                      <Radio value={5}>24日（余{list[5].count}）</Radio>
+                      <Radio value={6}>25日（余{list[6].count}）</Radio>
                     </>)}
                   </Radio.Group>
                 ) : <Text type='danger'>服务器开小差，请刷新重试</Text>}
