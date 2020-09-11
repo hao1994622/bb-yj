@@ -145,7 +145,7 @@ const MainContent = () => {
           }
         />
       )}
-      <Flex style={{display: showRes && 'none'}} bg='#fff' className={styles.contain} sx={{minHeight: ['100vh', '100vh', 'auto']}}>
+      <Flex style={{display: showRes ? 'none' : 'block'}} bg='#fff' className={styles.contain} sx={{minHeight: ['100vh', '100vh', 'auto']}}>
         <Flex width={1} className='height100' flexDirection="column">
           <div style={{marginBottom: 50}}>
             <Title level={4}>建发磐龙府中秋博饼预约</Title>
