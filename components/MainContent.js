@@ -31,10 +31,11 @@ const MainContent = () => {
   const onFinish = async values => {
     console.log('Success:', values);
     console.log(session)
-    if(!session) {
+    if(!session && session !== 0) {
       setDateErr(true);
       return;
     }
+    setDateErr(false);
     const {name, phone, room, xiaoqu} = values;
     try {
       const res = await post('/baoming/',{
@@ -148,7 +149,7 @@ const MainContent = () => {
       <Flex style={{display: showRes ? 'none' : 'block'}} bg='#fff' className={styles.contain} sx={{minHeight: ['100vh', '100vh', 'auto']}}>
         <Flex width={1} className='height100' flexDirection="column">
           <div style={{marginBottom: 50}}>
-            <Title level={4}>建发磐龙府中秋博饼预约</Title>
+            <Title level={4}>莆田建发业主中秋博饼预约</Title>
             <Text  type="secondary">选择您所需要预约的信息，我们将在第一时间为您安排。</Text>
           </div>
           <Form
